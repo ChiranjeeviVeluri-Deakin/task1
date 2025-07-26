@@ -9,14 +9,12 @@
   <h1>Basic Calculator to Add Two Numbers</h1>
   <h2>Enter your two numbers to get the sum</h2>
 
-  <!-- form with no action/method, we’ll handle it in JS -->
   <form id="addForm">
     <input type="number" name="num1" placeholder="Enter first number" required>
     <input type="number" name="num2" placeholder="Enter second number" required>
     <button type="submit">Add</button>
   </form>
 
-  <!-- result will appear here -->
   <h2 id="result"></h2>
 
   <script>
@@ -24,18 +22,16 @@
     const result = document.getElementById('result');
 
     form.addEventListener('submit', async e => {
-      e.preventDefault();                       // prevent full‑page reload
+      e.preventDefault();                     
       const n1 = form.num1.value;
       const n2 = form.num2.value;
 
-      // call our Express endpoint
       const res = await fetch(`/add?num1=${n1}&num2=${n2}`);
       if (!res.ok) {
         result.textContent = 'Error: Invalid numbers';
         return;
       }
 
-      // Express returns plain text "Sum is: X"
       result.textContent = await res.text();
     });
   </script>
