@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simple Calculator</title>
+</head>
+<body>
+  <h1>Basic Calculator to Add Two Numbers</h1>
+  <h2>Enter your two numbers to get the sum</h2>
+
+  <form id="addForm">
+    <input type="number" name="num1" placeholder="Enter first number" required>
+    <input type="number" name="num2" placeholder="Enter second number" required>
+    <button type="submit">Add</button>
+  </form>
+
+  <h2 id="result"></h2>
+
+  <script>
+    const form = document.getElementById('addForm');
+    const resultEl = document.getElementById('result');
+
+    form.addEventListener('submit', async e => {
+      e.preventDefault();              
+      const num1 = form.num1.value;
+      const num2 = form.num2.value;
+
+      const res = await fetch(`/add?num1=${num1}&num2=${num2}`);
+      if (!res.ok) {
+        resultEl.textContent = 'Error: Invalid numbers';
+        return;
+      }
+
+      const text = await res.text();
+      resultEl.textContent = text;
+    });
+  </script>
+</body>
+</html>
