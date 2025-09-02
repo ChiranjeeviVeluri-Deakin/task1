@@ -1,0 +1,6 @@
+{
+  "all": true,
+  "include": ["**/*.js", "../week5/**/*.js"],
+  "exclude": ["test/**", "node_modules/**"],
+  "reporter": ["text", "lcov"]
+}

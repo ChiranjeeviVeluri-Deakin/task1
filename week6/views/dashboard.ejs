@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title><%= title %></title>
+  <link rel="stylesheet" href="/styles.css"/>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1><%= title %></h1>
+      <nav>
+        <a class="btn" href="/" target="_blank">Health (GET /)</a>
+        <a class="btn" href="/api/bookings" target="_blank">List Bookings (GET)</a>
+      </nav>
+    </header>
+
+    <div class="card">
+      <h3>Seed demo data</h3>
+      <form action="/seed/demo" method="post">
+        <button class="btn btn-primary" type="submit">Seed Demo</button>
+      </form>
+    </div>
+
+    <div class="card">
+      <h3>Create booking (POST /api/bookings)</h3>
+      <pre><code>curl -X POST &lt;your-url&gt;/api/bookings \
+  -H "Content-Type: application/json" \
+  -d '{"studentName":"Bob","tutorName":"Alice","topic":"DSA","start":"2025-08-17T10:00:00Z","end":"2025-08-17T11:00:00Z","status":"confirmed"}'</code></pre>
+    </div>
+  </div>
+</body>
+</html>
