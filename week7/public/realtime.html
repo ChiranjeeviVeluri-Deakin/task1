@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Week 7 – Socket Programming</title>
+    <style>
+      body { font-family: system-ui, sans-serif; margin: 24px; }
+      #msg, #status, #typing { margin: 8px 0; }
+      #feed { list-style: none; padding: 0; }
+      #feed li { padding: 6px 8px; border: 1px solid #ddd; margin: 6px 0; border-radius: 6px; }
+      #feed li.me { background: #f5f7ff; }
+      .row { display: flex; gap: 8px; margin-top: 12px; }
+      input[type="text"] { flex: 1; padding: 8px; }
+      button { padding: 8px 12px; cursor: pointer; }
+    </style>
+  </head>
+  <body>
+    <h1>Realtime Socket Demo</h1>
+
+    <div id="status">Connecting…</div>
+    <div id="msg">Waiting for server message…</div>
+    <div id="typing"></div>
+
+    <ul id="feed"></ul>
+
+    <form id="chatForm" class="row" autocomplete="off">
+      <input id="text" type="text" placeholder="Type a message…" />
+      <button type="submit">Send</button>
+    </form>
+
+    <p>
+      Quick links:
+      <a href="/health">Health</a> •
+      <a href="/api/bookings">Bookings (GET)</a>
+    </p>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      const statusEl = document.getElementById('status');
+      const msgEl = document.getElementById('msg');
+      const typingEl = document.getElementById('typing');
+      const feed = document.getElementById('feed');
+      const form = document.getElementById('chatForm');
+      const input = document.getElementById('text');
+
+      const addLine = (text, cls='') => {
+        const li = document.createElement('li');
+        li.textContent = text;
+        if (cls) li.className = cls;
+        feed.appendChild(li);
+        feed.scrollTop = feed.scrollHeight;
+      };
+
+      const socket = io();
+
+      socket.on('connect', () => {
+        statusEl.textContent = 'Connected: ' + socket.id;
+      });
+
+      socket.on('disconnect', (reason) => {
+        statusEl.textContent = 'Disconnected: ' + reason;
+      });
+
+      // welcome ping from server
+      socket.on('serverMessage', (data) => {
+        msgEl.textContent = data;
+      });
+
+      // receive chat from others
+      socket.on('chatMessage', (payload) => {
+        addLine(`${payload.from}: ${payload.text}`);
+      });
+
+      // show typing indicator from others
+      socket.on('typing', ({ from, isTyping }) => {
+        typingEl.textContent = isTyping ? `${from} is typing…` : '';
+      });
+
+      // send chat
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const text = input.value.trim();
+        if (!text) return;
+        // show locally
+        addLine(`You: ${text}`, 'me');
+        // send to server
+        socket.emit('chatMessage', text);
+        input.value = '';
+        socket.emit('typing', false);
+      });
+
+      // typing indicator
+      let lastVal = '';
+      input.addEventListener('input', () => {
+        const nowHasText = input.value.trim().length > 0;
+        const beforeHasText = lastVal.length > 0;
+        if (nowHasText !== beforeHasText) {
+          socket.emit('typing', nowHasText);
+        }
+        lastVal = input.value.trim();
+      });
+    </script>
+  </body>
+</html>
